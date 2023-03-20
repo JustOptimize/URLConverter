@@ -1,23 +1,48 @@
-console.log('Popup loaded');
+let settings = [
+	{
+		"domain": "https://raw.githubusercontent.com/",
+		"original": "https://raw.githubusercontent.com/$1/$2/$3/$4",
+		"replace": "https://github.com/$1/$2/blob/$3/$4"
+	},
+	{
+		"domain": "https://www.google.com/search",
+		"original": "https://www.google.com/$1",
+		"replace": "https://search.brave.com/$1"
+	},
+	{
+		"domain": "https://search.brave.com/",
+		"original": "https://search.brave.com/$1",
+		"replace": "https://www.google.com/$1"
+	}
+]
+
 document.addEventListener('DOMContentLoaded', () => {
-	console.log('DOM loaded');
 	// Get the current tab
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		const currentTab = tabs[0];
+
 		// Get the current URL
 		const url = currentTab.url;
-		// Check if the URL is a raw.githubusercontent.com URL
-		if (url.startsWith('https://raw.githubusercontent.com/')) {
-			const parts = url.split('/').slice(3);
-			const username = parts[0]
-			const repoName = parts[1]
-			const branch = parts[2]
-			const path = parts.slice(3).join('/');
 
-			const githubUrl = `https://github.com/${username}/${repoName}/blob/${branch}/${path}`;
-			// Navigate to the converted URL
-			chrome.tabs.update(currentTab.id, { url: githubUrl });
-		}
+		// Check if it matches any of the settings
+		settings.forEach((setting) => {
+			//check if url matches
+			if (url.startsWith(setting.domain)) {
+				
+				//split url
+				const parts = url.split('/').slice(3);
+
+				//replace original with replace
+				let newUrl = setting.replace;
+				for (let i = 0; i < parts.length; i++) {
+					newUrl = newUrl.replace('$' + (i + 1), parts[i]);
+				}
+				
+				// Navigate to the converted URL
+				chrome.tabs.update(currentTab.id, { url: newUrl });
+			}
+		});
+
 		window.close();
 	});
 });
