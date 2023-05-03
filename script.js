@@ -13,6 +13,11 @@ let settings = [
 		"domain": "https://search.brave.com/",
 		"original": "https://search.brave.com/$1",
 		"replace": "https://www.google.com/$1"
+	},
+	{
+		"domain": "https://www.youtube.com/shorts/",
+		"original": "https://www.youtube.com/$1/$2",
+		"replace": "https://www.youtube.com/watch?v=$2"
 	}
 ]
 
