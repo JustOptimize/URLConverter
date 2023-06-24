@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "URL Converter",
-  "description": "Converts raw.githubusercontent.com URLs to github.com URLs",
-  "version": "1.0",
+  "description": "A extention that replaces some urls with user declared ones when clicked",
+  "version": "1.2",
   "browser_action": {
     "default_icon": "icon.png",
     "default_title": "URL Converter",

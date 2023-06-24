@@ -18,37 +18,52 @@ let settings = [
 		"domain": "https://www.youtube.com/shorts/",
 		"original": "https://www.youtube.com/$1/$2",
 		"replace": "https://www.youtube.com/watch?v=$2"
+	},
+	{
+		"domain": "https://tracking.tldrnewsletter.com/CL0/",
+		"original": "https://tracking.tldrnewsletter.com/CL0/$1",
+		"replace": "$1"
 	}
 ]
 
 document.addEventListener('DOMContentLoaded', () => {
 	// Get the current tab
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-		const currentTab = tabs[0];
-
+		
 		// Get the current URL
-		const url = currentTab.url;
-
-		// Check if it matches any of the settings
+		const currentTab = tabs[0];
+		const currentTabUrl = currentTab.url;
+		
 		settings.forEach((setting) => {
-			//check if url matches
-			if (url.startsWith(setting.domain)) {
-				
-				//split url
-				const parts = url.split('/').slice(3);
 
-				//replace original with replace
-				let newUrl = setting.replace;
-				for (let i = 0; i < parts.length; i++) {
-					newUrl = newUrl.replace('$' + (i + 1), parts[i]);
-				}
-				
-				// Navigate to the converted URL
-				chrome.tabs.update(currentTab.id, { url: newUrl });
+			// Check if the current URL starts with the setting.domain
+			if (!currentTabUrl.startsWith(setting.domain)) {
+				return;
 			}
+		
+			// Split setting.original by /
+			const originalParts = setting.original.split('/');
+			const currentTabUrlParts = currentTabUrl.split('/');
+
+			let newUrl = setting.replace;
+			for (let i = 0; i < originalParts.length; i++) {
+				if (originalParts[i].startsWith('$')) {
+					let part;
+					// If last part, get all remaining parts
+					if (i === originalParts.length - 1) {
+						part = currentTabUrlParts.slice(i).join('/');
+					} else {
+						part = currentTabUrlParts[i];
+					}
+
+					newUrl = newUrl.replace(originalParts[i], part);
+				}
+			}
+
+			// Navigate to the converted URL
+			chrome.tabs.update(currentTab.id, { url: newUrl });
 		});
 
 		window.close();
 	});
 });
-
