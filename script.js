@@ -1,4 +1,4 @@
-let settings = [
+const settings = [
 	{
 		"domain": "https://raw.githubusercontent.com/",
 		"original": "https://raw.githubusercontent.com/$1/$2/$3/$4",
